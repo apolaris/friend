@@ -4,41 +4,53 @@
 
 template<class T>
 doubleChain<T>::doubleChain()
-{// Constructor.
-    firstNode = NULL;
-    listSize = 0;
+{
+    // Constructor.
+    firstNode = new dchainNode<T>(sourceNode->element);
+    firstNode->next = firstNode;
+    firstNode->last = firstNode;
+    listSize = 1;
 }
 
 template<class T>
 doubleChain<T>::doubleChain(int initialCapacity)
-{// Constructor.
+{
+    // Constructor.
     if (initialCapacity < 1)
         throw std::invalid_argument("Initial capacity = " + std::to_string(initialCapacity) + " Must be > 0");
-    firstNode = NULL;
-    listSize = 0;
+    firstNode = new dchainNode<T>(sourceNode->element);
+    firstNode->next = firstNode;
+    firstNode->last = firstNode;
+    listSize = 1;
 }
 
 template<class T>
 doubleChain<T>::doubleChain(const doubleChain& theList)
-{// Copy constructor.
+{
+    // Copy constructor.
     listSize = theList.listSize;
 
     if (0 == listSize)
-    {// theList is empty
-        firstNode = NULL;
+    {
+        // theList is empty
+        firstNode = new dchainNode<T>(sourceNode->element);
+        firstNode->next = firstNode;
+        firstNode->last = firstNode;
+        listSize = 1;
         return;
     }
     dchainNode<T>* sourceNode = theList.firstNode;
-                    // node in theList to copy from
+    // node in theList to copy from
     firstNode = new dchainNode<T>(sourceNode->element);
-                    // copy first element of theList
+    // copy first element of theList
     sourceNode = sourceNode->next;
     dchainNode<T>* targetNode = firstNode;
     dchainNode<T>* k;
     int i;
 
     for(i = 1; i<listSize; i++)
-    {// copy remaining elements
+    {
+        // copy remaining elements
         k = new dchainNode<T>(sourceNode->element);
         targetNode->next = k;
         k->last = targetNode;
@@ -51,10 +63,12 @@ doubleChain<T>::doubleChain(const doubleChain& theList)
 
 template<class T>
 doubleChain<T>::~doubleChain()
-{// Chain destructor. Delete all nodes in chain.
+{
+    // Chain destructor. Delete all nodes in chain.
     firstNode->last->next = NULL;
     while (firstNode != NULL)
-    {// delete firstNode
+    {
+        // delete firstNode
         dchainNode<T>* nextNode = firstNode->next;
         delete firstNode;
         firstNode = nextNode;
@@ -62,19 +76,22 @@ doubleChain<T>::~doubleChain()
 }
 
 template<class T>
-void doubleChain<T>::checkIndex(int theIndex) const{
-	if(theIndex < 0 || theIndex >=listSize){
-		throw std::out_of_range("index = " + std::to_string(theIndex) + " size = " + std::to_string(listSize));
-	}
+void doubleChain<T>::checkIndex(int theIndex) const
+{
+    if(theIndex < 0 || theIndex >=listSize)
+    {
+        throw std::out_of_range("index = " + std::to_string(theIndex) + " size = " + std::to_string(listSize));
+    }
 }
 
 template<class T>
 T& doubleChain<T>::get(int theIndex) const
-{// Return element whose index is theIndex.
- // Throw illegalIndex exception if no such element.
+{
+    // Return element whose index is theIndex.
+// Throw illegalIndex exception if no such element.
     checkIndex(theIndex);
 
-   // move to desired node
+    // move to desired node
     dchainNode<T>* currentNode = firstNode;
     for (int i = 0; i < theIndex; i++)currentNode = currentNode->next;
 
@@ -82,10 +99,12 @@ T& doubleChain<T>::get(int theIndex) const
 }
 
 template<class T>
-int doubleChain<T>::indexOf(const T& theElement) const{
+int doubleChain<T>::indexOf(const T& theElement) const
+{
     dchainNode<T>* currentNode = firstNode;
     int index = 0;  // index of currentNode
-    while (index < listSize && currentNode->element != theElement){
+    while (index < listSize && currentNode->element != theElement)
+    {
         currentNode = currentNode->next;
         index++;
     }
@@ -96,9 +115,15 @@ int doubleChain<T>::indexOf(const T& theElement) const{
 }
 
 template<class T>
-void doubleChain<T>::insert(int theIndex, const T& theElement){
+void doubleChain<T>::insert(int theIndex, const T& theElement)
+{
     if (theIndex != listSize)
         checkIndex(theIndex);
+    if(theIndex == 0)
+    {
+        std::cout<<"sorry, the index starts from 1 and 0 is the head Node\n";
+        return ;
+    }
     if (listSize == 0)
     {
         firstNode = new dchainNode<T>(theElement);
@@ -107,7 +132,8 @@ void doubleChain<T>::insert(int theIndex, const T& theElement){
     }
 
     else
-    {  // find predecessor of new element
+    {
+        // find predecessor of new element
         dchainNode<T>* p = firstNode;
         for (int i = 0; i < theIndex - 1; ++i) p = p->next;
         dchainNode<T>* k = new dchainNode<T>(theElement);
@@ -120,10 +146,16 @@ void doubleChain<T>::insert(int theIndex, const T& theElement){
 }
 
 template<class T>
-void doubleChain<T>::erase(int theIndex){
+void doubleChain<T>::erase(int theIndex)
+{
+    if(theIndex == 0)
+    {
+        std::cout<<"sorry, the index starts from 1 and 0 is the head Node\n";
+        return ;
+    }
     checkIndex(theIndex);
     dchainNode<T>* deleteNode;
-      // use p to get to predecessor of desired node
+    // use p to get to predecessor of desired node
     dchainNode<T>* p = firstNode;
     for (int i = 0; i < theIndex - 1; ++i) p = p->next;
 
@@ -138,19 +170,21 @@ void doubleChain<T>::erase(int theIndex){
 template<class T>
 void doubleChain<T>::output(std::ostream& out) const
 {
-   dchainNode<T> *p = firstNode;
-   out <<std::endl;
-   out << p->element <<" ";
-   p=p->next;
-   while(p != firstNode){
-	   out << p->element <<" ";
-	   p = p->next;
-   }
-   out << std::endl;
+    dchainNode<T> *p = firstNode;
+    out <<std::endl;
+    out << p->element <<" ";
+    p=p->next;
+    while(p != firstNode)
+    {
+        out << p->element <<" ";
+        p = p->next;
+    }
+    out << std::endl;
 }
 
 template <class T>
-std::ostream& operator<<(std::ostream& out, const doubleChain<T>& x){
-	x.output(out);
-	return out;
+std::ostream& operator<<(std::ostream& out, const doubleChain<T>& x)
+{
+    x.output(out);
+    return out;
 }
